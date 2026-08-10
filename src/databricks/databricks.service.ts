@@ -62,4 +62,21 @@ export class DatabricksService {
       ORDER BY revenue DESC
     `);
   }
+
+  async getTopCustomer() {
+    return this.executeQuery(`
+      SELECT
+        c.customer_id,
+        c.name,
+        SUM(o.quantity * p.price) AS total_spent
+      FROM workspace.default.customers c
+      JOIN workspace.default.orders o
+        ON c.customer_id = o.customer_id
+      JOIN workspace.default.products p
+        ON o.product_id = p.product_id
+      GROUP BY c.customer_id, c.name
+      ORDER BY total_spent DESC
+      LIMIT 1
+    `);
+  }
 }

@@ -19,4 +19,9 @@ export class AnalyticsController {
   async getRevenueByCategory() {
     return this.databricksService.getRevenueByCategory();
   }
+
+  @Get('top-customer')
+  async getTopCustomer() {
+    return this.databricksService.getTopCustomer();
+  }
 }
