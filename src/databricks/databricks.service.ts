@@ -6,7 +6,7 @@ import { ConfigService } from '@nestjs/config';
 export class DatabricksService {
   constructor(private readonly configService: ConfigService) {}
 
-  async testConnection() {
+  async getTopProducts() {
     const client = new DBSQLClient();
 
     const connection = await client.connect({

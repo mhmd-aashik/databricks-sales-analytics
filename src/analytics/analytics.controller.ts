@@ -7,6 +7,6 @@ export class AnalyticsController {
 
   @Get('top-products')
   async getTopProducts() {
-    return this.databricksService.testConnection();
+    return this.databricksService.getTopProducts();
   }
 }
