@@ -32,4 +32,35 @@ export class DatabricksService {
 
     return result;
   }
+
+  async getTotalRevenue() {
+    const client = new DBSQLClient();
+
+    const connection = await client.connect({
+      host: this.configService.get<string>('DATABRICKS_HOST')!,
+      path: this.configService.get<string>('DATABRICKS_PATH')!,
+      token: this.configService.get<string>('DATABRICKS_TOKEN')!,
+    });
+
+    const session = await connection.openSession();
+
+    const operation = await session.executeStatement(
+      `
+      SELECT
+        SUM(o.quantity * p.price) AS total_revenue
+      FROM workspace.default.orders o
+      JOIN workspace.default.products p
+        ON o.product_id = p.product_id
+      `,
+      { runAsync: true },
+    );
+
+    const result = await operation.fetchAll();
+
+    await operation.close();
+    await session.close();
+    await connection.close();
+
+    return result;
+  }
 }

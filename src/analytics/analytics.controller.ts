@@ -9,4 +9,9 @@ export class AnalyticsController {
   async getTopProducts() {
     return this.databricksService.getTopProducts();
   }
+
+  @Get('total-revenue')
+  async getTotalRevenue() {
+    return this.databricksService.getTotalRevenue();
+  }
 }
