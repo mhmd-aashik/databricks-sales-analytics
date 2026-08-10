@@ -3,6 +3,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { DatabricksService } from './databricks/databricks.service';
 import { ConfigModule } from '@nestjs/config';
+import { AnalyticsController } from './analytics/analytics.controller';
 
 @Module({
   imports: [
@@ -11,7 +12,7 @@ import { ConfigModule } from '@nestjs/config';
       envFilePath: '.env',
     }),
   ],
-  controllers: [AppController],
+  controllers: [AppController, AnalyticsController],
   providers: [AppService, DatabricksService],
 })
 export class AppModule {}
