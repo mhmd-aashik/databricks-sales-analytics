@@ -6,34 +6,7 @@ import { ConfigService } from '@nestjs/config';
 export class DatabricksService {
   constructor(private readonly configService: ConfigService) {}
 
-  async getTopProducts() {
-    const client = new DBSQLClient();
-
-    const connection = await client.connect({
-      host: this.configService.get('DATABRICKS_HOST')!,
-      path: this.configService.get('DATABRICKS_PATH')!,
-      token: this.configService.get('DATABRICKS_TOKEN')!,
-    });
-
-    const session = await connection.openSession();
-
-    const operation = await session.executeStatement(
-      'SELECT * FROM workspace.default.product_revenue ORDER BY revenue DESC',
-      {
-        runAsync: true,
-      },
-    );
-
-    const result = await operation.fetchAll();
-
-    await operation.close();
-    await session.close();
-    await connection.close();
-
-    return result;
-  }
-
-  async getTotalRevenue() {
+  private async executeQuery(sql: string) {
     const client = new DBSQLClient();
 
     const connection = await client.connect({
@@ -44,23 +17,36 @@ export class DatabricksService {
 
     const session = await connection.openSession();
 
-    const operation = await session.executeStatement(
-      `
+    try {
+      const operation = await session.executeStatement(sql, {
+        runAsync: true,
+      });
+      try {
+        return await operation.fetchAll();
+      } finally {
+        await operation.close();
+      }
+    } finally {
+      await session.close();
+      await connection.close();
+    }
+  }
+
+  async getTopProducts() {
+    return this.executeQuery(`
+      SELECT *
+      FROM workspace.default.product_revenue
+      ORDER BY revenue DESC
+    `);
+  }
+
+  async getTotalRevenue() {
+    return this.executeQuery(`
       SELECT
         SUM(o.quantity * p.price) AS total_revenue
       FROM workspace.default.orders o
       JOIN workspace.default.products p
         ON o.product_id = p.product_id
-      `,
-      { runAsync: true },
-    );
-
-    const result = await operation.fetchAll();
-
-    await operation.close();
-    await session.close();
-    await connection.close();
-
-    return result;
+    `);
   }
 }
