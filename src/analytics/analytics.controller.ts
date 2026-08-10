@@ -14,4 +14,9 @@ export class AnalyticsController {
   async getTotalRevenue() {
     return this.databricksService.getTotalRevenue();
   }
+
+  @Get('revenue-by-category')
+  async getRevenueByCategory() {
+    return this.databricksService.getRevenueByCategory();
+  }
 }

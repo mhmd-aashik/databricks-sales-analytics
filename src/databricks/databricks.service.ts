@@ -49,4 +49,17 @@ export class DatabricksService {
         ON o.product_id = p.product_id
     `);
   }
+
+  async getRevenueByCategory() {
+    return this.executeQuery(`
+      SELECT
+        p.category,
+        SUM(o.quantity * p.price) AS revenue
+      FROM workspace.default.orders o
+      JOIN workspace.default.products p
+        ON o.product_id = p.product_id
+      GROUP BY p.category
+      ORDER BY revenue DESC
+    `);
+  }
 }
