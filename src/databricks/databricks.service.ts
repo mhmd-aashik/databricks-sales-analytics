@@ -79,4 +79,17 @@ export class DatabricksService {
       LIMIT 1
     `);
   }
+
+  async getMonthlyRevenue() {
+    return this.executeQuery(`
+      SELECT
+        DATE_FORMAT(o.order_date, 'yyyy-MM') AS month,
+        SUM(o.quantity * p.price) AS revenue
+      FROM workspace.default.orders o
+      JOIN workspace.default.products p
+        ON o.product_id = p.product_id
+      GROUP BY DATE_FORMAT(o.order_date, 'yyyy-MM')
+      ORDER BY month
+    `);
+  }
 }

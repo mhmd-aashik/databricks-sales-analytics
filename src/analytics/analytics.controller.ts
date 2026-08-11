@@ -24,4 +24,9 @@ export class AnalyticsController {
   async getTopCustomer() {
     return this.databricksService.getTopCustomer();
   }
+
+  @Get('monthly-revenue')
+  async getMonthlyRevenue() {
+    return this.databricksService.getMonthlyRevenue();
+  }
 }
